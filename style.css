@@ -1,0 +1,75 @@
+* {
+  padding: 0px;
+  margin: 0px;
+  border: 0px;
+}
+
+#Background {
+  z-index: -1;
+}
+
+#Background .container {
+  padding: 40px;
+}
+
+.cool {
+  font-family: "Bitcount Grid Double", system-ui;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-size: 80px;
+  font-style: normal;
+  font-variation-settings: "slnt" 0, "CRSV" 0.5, "ELSH" 0, "ELXP" 0;
+}
+
+
+.cool-2 {
+  font-family: "Mulish", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 450;
+  font-style: normal;
+}
+
+.flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: left;
+}
+
+.header {
+  font-size: 80px;
+  font-weight: 400;
+}
+
+.color{
+  background-color: black;
+  color: white;
+}
+
+.hero img {
+  height: 220px;
+  border-radius: 50px;
+  padding-left: 0px;
+}
+
+.card-cover {
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+}
+
+.img {
+  height: 300px;
+  border-radius: 50px;
+}
+
+.fit {
+  height: 550px;
+  width: 900px;
+  border-radius: 30px;
+  object-fit: cover;
+}
+
+.contact {
+
+}
