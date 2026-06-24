@@ -1,3 +1,5 @@
+
+
 const canvas = document.getElementById('gridCanvas');
 const ctx = canvas.getContext('2d');
 
