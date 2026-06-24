@@ -3,78 +3,92 @@ const ctx = canvas.getContext('2d');
 
 let width, height;
 let dots = [];
-
-// --- TWEAK THESE SETTINGS ---
-const spacing = 50;            // Distance between the dots
-const interactionRadius = 150; // How big the "flashlight" hover area is
-const maxDotRadius = 4;        // The size of the dot when directly under the mouse
-const easing = 0.08;           // How smooth the animation is (lower = slower/smoother)
-// -----------------------------
+const spacing = 25;         
+const interactionRadius = 150;
+const maxDotRadius = 4;        
+const easing = 0.15;           
 let mouse = { x: -1000, y: -1000 };
 
-// 1. Setup the Grid
 function init() {
     width = window.innerWidth;
     height = window.innerHeight;
     canvas.width = width;
     canvas.height = height;
     dots = [];
-    // Loop through the screen width and height to plot out the grid
+    
     for (let x = 0; x < width; x += spacing) {
         for (let y = 0; y < height; y += spacing) {
             dots.push({
                 x: x,
                 y: y,
-                currentRadius: 0 // All dots start invisible
+                currentRadius: 1, // Start slightly visible
+                baseRadius: 1
             });
         }
     }
 }
 
-// 2. Track the Mouse
+// Track mouse movement
 window.addEventListener('mousemove', (e) => {
     mouse.x = e.clientX;
     mouse.y = e.clientY;
 });
 
-// 3. The Animation Loop
+// Reset mouse position when leaving the window
+window.addEventListener('mouseout', () => {
+    mouse.x = -1000;
+    mouse.y = -1000;
+});
+
+// The Animation Loop
 function animate() {
     requestAnimationFrame(animate);
-    // Clear the screen every frame
+    // Clear frame
     ctx.clearRect(0, 0, width, height);
-    
-    // Set dot color
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
 
     dots.forEach(dot => {
-        // Calculate how far the mouse is from this specific dot
         const dx = mouse.x - dot.x;
         const dy = mouse.y - dot.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
-        let targetRadius = 0;
+        let targetRadius = dot.baseRadius;
+        let intensity = 0;
 
-        // If the dot is close enough to the mouse, calculate its size
+        // Calculate interaction math based on distance
         if (distance < interactionRadius) {
-            const factor = 1 - (distance / interactionRadius);
-            targetRadius = factor * maxDotRadius;
+            intensity = 1 - (distance / interactionRadius);
+            targetRadius = dot.baseRadius + (intensity * maxDotRadius);
         }
 
-        // Smoothly transition the current radius to the target radius
+        // Ease the radius to make it smooth
         dot.currentRadius += (targetRadius - dot.currentRadius) * easing;
 
-        // Only draw the dot if it's large enough to see (saves browser memory)
-        if (dot.currentRadius > 0.1) {
-            ctx.beginPath();
-            ctx.arc(dot.x, dot.y, dot.currentRadius, 0, Math.PI * 2);
-            ctx.fill();
+        // Draw the dot
+        ctx.beginPath();
+        ctx.arc(dot.x, dot.y, dot.currentRadius, 0, Math.PI * 2);
+
+        if (intensity > 0.05) {
+            // Glowing active state (Cyan to Magenta based on distance)
+            const r = Math.floor(255 * intensity);
+            const g = Math.floor(255 * (1 - intensity));
+            const b = 255;
+            
+            ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${0.4 + (intensity * 0.6)})`;
+            ctx.shadowBlur = 15 * intensity;
+            ctx.shadowColor = `rgba(${r}, ${g}, ${b}, 1)`;
+        } else {
+            // Dim, resting state
+            ctx.fillStyle = 'rgba(100, 150, 255, 0.15)';
+            ctx.shadowBlur = 0;
         }
+
+        ctx.fill();
     });
 }
 
-// 4. Handle Resizing so the grid updates if the user makes the window bigger
+// Recalculate if the user resizes the browser
 window.addEventListener('resize', init);
 
-// Start it up
+// Start the animation
 init();
 animate();
