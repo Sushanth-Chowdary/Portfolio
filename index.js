@@ -1,60 +1,80 @@
-const body = document.querySelector('body');
+const canvas = document.getElementById('gridCanvas');
+const ctx = canvas.getContext('2d');
 
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });    
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+let width, height;
+let dots = [];
 
-const particlesGeometry = new THREE.BufferGeometry();
-const particlesCount = 1500;
-const posArray = new Float32Array(particlesCount * 3);
+// --- TWEAK THESE SETTINGS ---
+const spacing = 50;            // Distance between the dots
+const interactionRadius = 150; // How big the "flashlight" hover area is
+const maxDotRadius = 4;        // The size of the dot when directly under the mouse
+const easing = 0.08;           // How smooth the animation is (lower = slower/smoother)
+// -----------------------------
+let mouse = { x: -1000, y: -1000 };
 
-for(let i = 0; i < particlesCount * 3; i++) {
-    posArray[i] = (Math.random() - 0.5) * 10;
+// 1. Setup the Grid
+function init() {
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+    dots = [];
+    // Loop through the screen width and height to plot out the grid
+    for (let x = 0; x < width; x += spacing) {
+        for (let y = 0; y < height; y += spacing) {
+            dots.push({
+                x: x,
+                y: y,
+                currentRadius: 0 // All dots start invisible
+            });
+        }
+    }
 }
 
-particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-
-const particlesMaterial = new THREE.PointsMaterial({
-    size: 0.02,
-    color: 0xffffff, 
-    transparent: true,
-    opacity: 0.8
+// 2. Track the Mouse
+window.addEventListener('mousemove', (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
 });
 
-const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
-scene.add(particlesMesh);
-
-// The stray 's' has been removed from here
-
-camera.position.z = 3;
-
-let mouseX = 0;
-let mouseY = 0;
-
-document.addEventListener('mousemove', (event) => {
-    mouseX = (event.clientX / window.innerWidth) - 0.5;
-    mouseY = (event.clientY / window.innerHeight) - 0.5;
-});
-
-const clock = new THREE.Clock();
-
+// 3. The Animation Loop
 function animate() {
     requestAnimationFrame(animate);
-    const elapsedTime = clock.getElapsedTime();
+    // Clear the screen every frame
+    ctx.clearRect(0, 0, width, height);
+    
+    // Set dot color
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
 
-    particlesMesh.rotation.y = elapsedTime * 0.05;
-    particlesMesh.rotation.x += (mouseY * 0.5 - particlesMesh.rotation.x) * 0.05;
-    particlesMesh.rotation.y += (mouseX * 0.5 - particlesMesh.rotation.y) * 0.05;
+    dots.forEach(dot => {
+        // Calculate how far the mouse is from this specific dot
+        const dx = mouse.x - dot.x;
+        const dy = mouse.y - dot.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
 
-    renderer.render(scene, camera);
+        let targetRadius = 0;
+
+        // If the dot is close enough to the mouse, calculate its size
+        if (distance < interactionRadius) {
+            const factor = 1 - (distance / interactionRadius);
+            targetRadius = factor * maxDotRadius;
+        }
+
+        // Smoothly transition the current radius to the target radius
+        dot.currentRadius += (targetRadius - dot.currentRadius) * easing;
+
+        // Only draw the dot if it's large enough to see (saves browser memory)
+        if (dot.currentRadius > 0.1) {
+            ctx.beginPath();
+            ctx.arc(dot.x, dot.y, dot.currentRadius, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    });
 }
 
-animate();
+// 4. Handle Resizing so the grid updates if the user makes the window bigger
+window.addEventListener('resize', init);
 
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-});
+// Start it up
+init();
+animate();
