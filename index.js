@@ -282,3 +282,66 @@ function animate3D() {
 }
 
 animate3D();
+
+// ==========================================
+// 3. NAVIGATION & REVEAL ANIMATION LOGIC
+// ==========================================
+document.addEventListener("DOMContentLoaded", () => {
+    const navToggle = document.getElementById('navToggle');
+    const navMenu = document.getElementById('navMenu');
+    const navButtons = document.querySelectorAll('.nav-btn');
+    const pages = document.querySelectorAll('.page-content');
+
+    // Toggle menu collapsing/uncollapsing
+    navToggle.addEventListener('click', () => {
+        navMenu.classList.toggle('collapsed');
+        navToggle.classList.toggle('rotated');
+    });
+
+    // Handle Page Transitions
+    navButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            // Prevent triggering if clicking the already active button
+            if (btn.classList.contains('active')) return;
+
+            // Update Active Button State
+            navButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const targetId = btn.getAttribute('data-target');
+            const targetPage = document.getElementById(targetId);
+
+            // Get exact click coordinates for the origin of the circle
+            const clickX = e.clientX + 'px';
+            const clickY = e.clientY + 'px';
+
+            pages.forEach(page => {
+                if (page.id === targetId) {
+                    // Prepare target page for animation
+                    page.classList.remove('hidden-page');
+                    page.classList.add('active-page');
+                    
+                    // Set CSS variables for the exact origin of the click
+                    page.style.setProperty('--click-x', clickX);
+                    page.style.setProperty('--click-y', clickY);
+                    
+                    // Trigger reflow & add animation class
+                    void page.offsetWidth; 
+                    page.classList.add('reveal-animation');
+
+                    // Clean up animation class after it finishes (0.8s)
+                    setTimeout(() => {
+                        page.classList.remove('reveal-animation');
+                        page.style.clipPath = 'none'; // reset clip path so it stays fully visible
+                    }, 800);
+
+                } else {
+                    // Hide other pages immediately (or you could fade them out)
+                    page.classList.remove('active-page');
+                    page.classList.add('hidden-page');
+                    page.style.clipPath = 'none';
+                }
+            });
+        });
+    });
+});

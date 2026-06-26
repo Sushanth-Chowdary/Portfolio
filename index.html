@@ -16,16 +16,62 @@
 
     <canvas id="gridCanvas"></canvas>
 
-    <div class="portfolio-content">
-        <div class="content" id="left">
-            <h1>Sushanth Chowdary</h1>
-            <p>This page is still under construction.</p>
-            <p>Please check back later for updates!</p>
-            <button class="btn">View Projects</button>
-        </div>
+    <div class="nav-wrapper">
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle Menu">
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
+                <path d="M12 4l-4 4m4-4v16m0 0l4-4m-4 4l-4-4" />
+            </svg>
+        </button>
         
-        <div class="content sphere" id="right">
-            <div id="tooltip" class="hidden"></div>
+        <div class="nav-menu" id="navMenu">
+            <button class="nav-btn active" data-target="page-home">HOME</button>
+            <button class="nav-btn" data-target="page-about">ABOUT</button>
+            <button class="nav-btn" data-target="page-projects">PROJECTS</button>
+            <button class="nav-btn" data-target="page-blog">BLOG</button>
+            <button class="nav-btn" data-target="page-contact">CONTACT</button>
+        </div>
+    </div>
+
+    <div id="page-home" class="page-content active-page">
+        <div class="portfolio-content">
+            <div class="content" id="left">
+                <h1>Sushanth Chowdary</h1>
+                <p>This page is still under construction.</p>
+                <p>Please check back later for updates!</p>
+                <button class="btn">View Projects</button>
+            </div>
+            
+            <div class="content sphere" id="right">
+                <div id="tooltip" class="hidden"></div>
+                </div>
+        </div>
+    </div>
+
+    <div id="page-about" class="page-content hidden-page">
+        <div class="new-content-wrapper">
+            <h1>About Me</h1>
+            <p>This is the newly revealed content for the about page!</p>
+        </div>
+    </div>
+
+    <div id="page-projects" class="page-content hidden-page">
+        <div class="new-content-wrapper">
+            <h1>My Projects</h1>
+            <p>Detailed project showcases will go here.</p>
+        </div>
+    </div>
+
+    <div id="page-blog" class="page-content hidden-page">
+        <div class="new-content-wrapper">
+            <h1>Blog</h1>
+            <p>Engineering updates and thoughts.</p>
+        </div>
+    </div>
+
+    <div id="page-contact" class="page-content hidden-page">
+        <div class="new-content-wrapper">
+            <h1>Contact</h1>
+            <p>Let's get in touch.</p>
         </div>
     </div>
 
