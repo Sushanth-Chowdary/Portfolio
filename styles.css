@@ -214,21 +214,24 @@ p {
     position: fixed;
     top: 30px;
     left: 50%;
-    transform: translateX(-50%);
+    /* Anchor the exact center of the 50px toggle, so it never moves when the menu expands */
+    margin-left: -25px; 
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 15px;
     z-index: 100;
 }
 
 .nav-toggle {
     width: 50px;
     height: 50px;
+    /* Prevent shrinking in flex layout */
+    flex-shrink: 0; 
     border-radius: 50%;
     background: #000;
     color: #fff;
-    border: 3px solid #000; /* Black outer rim */
-    box-shadow: inset 0 0 0 2px #fff; /* White inner rim */
+    border: 3px solid #000;
+    box-shadow: inset 0 0 0 2px #fff;
     cursor: pointer;
     display: flex;
     justify-content: center;
@@ -245,19 +248,23 @@ p {
     transform: rotate(180deg);
 }
 
+/* Glossy Acrylic Menu */
 .nav-menu {
     display: flex;
-    background: #000;
+    background: rgba(255, 255, 255, 0.15); /* Glass transparency */
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
     border-radius: 30px;
     padding: 6px;
     gap: 6px;
     overflow: hidden;
-    /* Smooth width expansion for the unclutter effect */
     max-width: 600px; 
     opacity: 1;
-    transition: max-width 0.6s cubic-bezier(0.4, 0, 0.2, 1), 
+    transition: max-width 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
                 opacity 0.4s ease, 
-                padding 0.6s ease;
+                padding 0.5s ease;
 }
 
 .nav-menu.collapsed {
@@ -265,12 +272,13 @@ p {
     opacity: 0;
     padding: 6px 0;
     pointer-events: none;
+    border-color: transparent;
 }
 
-/* Glossy Bubble Buttons */
+/* Nav Buttons inside Glass */
 .nav-btn {
-    background: #fff;
-    color: #000;
+    background: transparent;
+    color: #fff;
     border: none;
     border-radius: 25px;
     padding: 10px 22px;
@@ -279,15 +287,24 @@ p {
     cursor: pointer;
     white-space: nowrap;
     transition: all 0.3s ease;
-    box-shadow: inset 0 -2px 5px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.2);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5); /* Helps text pop on glass */
 }
 
-.nav-btn:hover, .nav-btn.active {
-    background: #e0e0e0;
+.nav-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Active Button Clearly Highlighted */
+.nav-btn.active {
+    background: #fff;
+    color: #000;
+    text-shadow: none;
+    box-shadow: inset 0 -2px 5px rgba(0,0,0,0.1), 0 0 10px rgba(255,255,255,0.5);
     transform: translateY(-1px);
 }
 
-/* --- PAGE CONTENT & REVEAL ANIMATION --- */
+
+/* --- PAGE CONTENT & TRANSITIONS --- */
 .page-content {
     position: fixed;
     top: 0;
@@ -295,14 +312,17 @@ p {
     width: 100vw;
     height: 100vh;
     z-index: 10; 
-    pointer-events: none; /* Let background canvas breathe when inactive */
+    pointer-events: none;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: opacity 0.2s ease;
 }
 
 .page-content.active-page {
     pointer-events: auto;
+    opacity: 1;
+    visibility: visible;
 }
 
 .page-content.hidden-page {
@@ -310,25 +330,39 @@ p {
     visibility: hidden;
 }
 
-/* The expanding circle animation */
-.reveal-animation {
-    animation: circleReveal 0.8s cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
+/* --- THE NEW SOLID RIPPLE --- */
+#transition-ripple {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #fff; /* Solid white wave. Change to #000 for black. */
+    z-index: 50; 
+    pointer-events: none;
+    clip-path: circle(0px at var(--click-x, 50%) var(--click-y, 50%));
+    opacity: 0;
 }
 
-@keyframes circleReveal {
-    0% {
-        clip-path: circle(0px at var(--click-x, 50%) var(--click-y, 50%));
-        opacity: 1;
-        visibility: visible;
-    }
-    100% {
-        clip-path: circle(150% at var(--click-x, 50%) var(--click-y, 50%));
-        opacity: 1;
-        visibility: visible;
-    }
+.ripple-in {
+    animation: rippleExpand 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-/* Basic styling for new pages so they look distinct but share the background */
+.ripple-out {
+    animation: rippleFade 0.5s ease forwards;
+}
+
+@keyframes rippleExpand {
+    0% { clip-path: circle(0px at var(--click-x) var(--click-y)); opacity: 1; }
+    100% { clip-path: circle(150% at var(--click-x) var(--click-y)); opacity: 1; }
+}
+
+@keyframes rippleFade {
+    0% { opacity: 1; clip-path: circle(150% at var(--click-x) var(--click-y)); }
+    100% { opacity: 0; clip-path: circle(150% at var(--click-x) var(--click-y)); }
+}
+
+/* Remaining styles for .new-content-wrapper stay the same... */
 .new-content-wrapper {
     background: rgba(10, 10, 15, 0.6);
     backdrop-filter: blur(10px);

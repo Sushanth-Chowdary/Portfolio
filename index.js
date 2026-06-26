@@ -291,6 +291,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const navMenu = document.getElementById('navMenu');
     const navButtons = document.querySelectorAll('.nav-btn');
     const pages = document.querySelectorAll('.page-content');
+    const transitionRipple = document.getElementById('transition-ripple');
 
     // Toggle menu collapsing/uncollapsing
     navToggle.addEventListener('click', () => {
@@ -301,47 +302,41 @@ document.addEventListener("DOMContentLoaded", () => {
     // Handle Page Transitions
     navButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
-            // Prevent triggering if clicking the already active button
             if (btn.classList.contains('active')) return;
 
-            // Update Active Button State
+            // 1. Update Active Button State Visually Right Away
             navButtons.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
 
             const targetId = btn.getAttribute('data-target');
-            const targetPage = document.getElementById(targetId);
-
-            // Get exact click coordinates for the origin of the circle
             const clickX = e.clientX + 'px';
             const clickY = e.clientY + 'px';
 
-            pages.forEach(page => {
-                if (page.id === targetId) {
-                    // Prepare target page for animation
-                    page.classList.remove('hidden-page');
-                    page.classList.add('active-page');
-                    
-                    // Set CSS variables for the exact origin of the click
-                    page.style.setProperty('--click-x', clickX);
-                    page.style.setProperty('--click-y', clickY);
-                    
-                    // Trigger reflow & add animation class
-                    void page.offsetWidth; 
-                    page.classList.add('reveal-animation');
+            // 2. Trigger Solid Reveal Wave
+            transitionRipple.style.setProperty('--click-x', clickX);
+            transitionRipple.style.setProperty('--click-y', clickY);
+            
+            transitionRipple.classList.remove('ripple-out');
+            transitionRipple.classList.add('ripple-in');
 
-                    // Clean up animation class after it finishes (0.8s)
-                    setTimeout(() => {
-                        page.classList.remove('reveal-animation');
-                        page.style.clipPath = 'none'; // reset clip path so it stays fully visible
-                    }, 800);
+            // 3. Swap content secretly while the screen is fully covered (400ms into the animation)
+            setTimeout(() => {
+                pages.forEach(page => {
+                    if (page.id === targetId) {
+                        page.classList.remove('hidden-page');
+                        page.classList.add('active-page');
+                    } else {
+                        page.classList.remove('active-page');
+                        page.classList.add('hidden-page');
+                    }
+                });
+            }, 400);
 
-                } else {
-                    // Hide other pages immediately (or you could fade them out)
-                    page.classList.remove('active-page');
-                    page.classList.add('hidden-page');
-                    page.style.clipPath = 'none';
-                }
-            });
+            // 4. Fade out the wave completely after it finishes expanding
+            setTimeout(() => {
+                transitionRipple.classList.remove('ripple-in');
+                transitionRipple.classList.add('ripple-out');
+            }, 700); 
         });
     });
 });
