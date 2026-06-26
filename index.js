@@ -4,11 +4,10 @@ const ctx = canvas.getContext('2d');
 let width, height;
 let dots = [];
 
-// Increased spacing and radius for the particle effect
-const spacing = 30;         
-const interactionRadius = 100;
+// Grid Settings
+const spacing = 20;         
+const interactionRadius = 70;
 const maxDotRadius = 10;        
-const easing = 0.15;           
 let mouse = { x: -1000, y: -1000 };
 let time = 0; 
 
@@ -52,13 +51,13 @@ function animate() {
     requestAnimationFrame(animate);
     ctx.clearRect(0, 0, width, height);
     
-    time += 0.015; // Slowed down the breathing slightly for a calmer effect
+    time += 0.015; // Speed of the idle breathing wave
 
     dots.forEach(dot => {
         const dx = mouse.x - dot.x;
         const dy = mouse.y - dot.y;
         
-        // Optimization: Use squared distance to avoid Math.sqrt on every dot
+        // Use squared distance for performance optimization
         const distSquared = (dx * dx) + (dy * dy);
         const radiusSquared = interactionRadius * interactionRadius;
 
@@ -72,23 +71,35 @@ function animate() {
             targetRadius = dot.baseRadius + (intensity * maxDotRadius);
         }
 
-        dot.currentRadius += (targetRadius - dot.currentRadius) * easing;
+        // --- ASYMMETRIC EASING (THE TRAIL EFFECT) ---
+        if (targetRadius > dot.currentRadius) {
+            // Fast attack when hovered
+            dot.currentRadius += (targetRadius - dot.currentRadius) * 0.3; 
+        } else {
+            // Slow release when mouse leaves
+            dot.currentRadius += (targetRadius - dot.currentRadius) * 0.015; 
+        }
 
         ctx.beginPath();
         const renderRadius = Math.max(0.1, dot.currentRadius); 
         ctx.arc(dot.x, dot.y, renderRadius, 0, Math.PI * 2);
 
-        if (intensity > 0.05) {
-            // Neon pink/purple mix when hovered
+        // --- COLOR SYNC LOGIC ---
+        // Calculate intensity based on the actual current size of the dot, 
+        // not just mouse proximity. This keeps the color while it shrinks.
+        const sizeIntensity = Math.max(0, (dot.currentRadius - dot.baseRadius) / maxDotRadius);
+
+        if (sizeIntensity > 0.01) {
+            // Neon pink/purple mapped to the fading size
             const r = Math.floor(255);
-            const g = Math.floor(58 + (100 * (1 - intensity)));
-            const b = Math.floor(130 + (125 * intensity));
+            const g = Math.floor(58 + (100 * (1 - sizeIntensity)));
+            const b = Math.floor(130 + (125 * sizeIntensity));
             
-            ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${0.4 + (intensity * 0.6)})`;
-            ctx.shadowBlur = 20 * intensity;
-            ctx.shadowColor = `rgba(${r}, ${g}, ${b}, 0.8)`;
+            ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${0.4 + (sizeIntensity * 0.6)})`;
+            ctx.shadowBlur = 20 * sizeIntensity;
+            ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${sizeIntensity})`;
         } else {
-            // Soft white/cyan resting state
+            // Soft cyan resting state blending with the idle wave
             const alpha = 0.15 + (idleWave * 0.1); 
             ctx.fillStyle = `rgba(200, 230, 255, ${alpha})`;
             ctx.shadowBlur = 0;
@@ -99,4 +110,4 @@ function animate() {
 }
 
 init();
-animate();
+animate();S

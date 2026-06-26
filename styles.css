@@ -24,7 +24,8 @@ body {
     height: 100vh;
     z-index: -2;
     overflow: hidden;
-    animation: colorShift 10s infinite alternate linear;
+    /* Shifts the entire background color slowly over time */
+    animation: colorShift 10s infinite alternate linear; 
 }
 
 .gradient-sphere {
@@ -79,7 +80,7 @@ canvas {
     top: 0;
     left: 0;
     z-index: 0; 
-    pointer-events: auto; 
+    pointer-events: auto; /* Required to track the mouse */
 }
 
 /* --- PORTFOLIO CONTENT --- */
@@ -89,24 +90,17 @@ canvas {
     text-align: center;
     max-width: 600px;
     padding: 2rem;
-    pointer-events: none; /* Lets mouse pass through to canvas */
+    pointer-events: none; /* Lets mouse pass through to canvas behind it */
 }
 
 h1 {
     font-size: 3.5rem;
     font-weight: 800;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     background: linear-gradient(to right, #fff, #acacac);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-}
-
-p {
-    font-size: 1.2rem;
-    line-height: 1.6;
-    color: rgba(255, 255, 255, 0.8);
-    margin-bottom: 2rem;
 }
 
 .btn {
@@ -122,7 +116,7 @@ p {
     text-transform: uppercase;
     letter-spacing: 1px;
     box-shadow: 0 4px 20px rgba(255, 58, 130, 0.3);
-    pointer-events: auto; /* Makes button clickable */
+    pointer-events: auto; /* Makes button clickable again */
 }
 
 .btn:hover {
