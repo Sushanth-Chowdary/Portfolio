@@ -131,7 +131,7 @@ controls.enableZoom = false; // Keeps the sphere fixed in place
 // Sphere Configuration
 const nodeCount = 200;
 const sphereRadius = 80;
-const connectionDistance = 20;
+const connectionDistance = 25;
 
 const particlesData = [];
 const positions = new Float32Array(nodeCount * 3);
@@ -273,8 +273,8 @@ function animate3D() {
 
     // --- NEW: Pause Rotation Logic ---
     if (!isHovering) {
-        group.rotation.y += 0.0015;
-        group.rotation.x += 0.0005;
+        group.rotation.y += 0.015;
+        group.rotation.x += 0.005;
     }
 
     controls.update(); // Required for smooth damping on user drag
