@@ -131,6 +131,60 @@ p {
     box-shadow: 0 6px 25px rgba(255, 58, 130, 0.5);
 }
 
+/* --- PREVIOUS CSS REMAINS EXACTLY THE SAME ABOVE THIS LINE --- */
+
+/* --- 3D SPHERE & TOOLTIP STYLES --- */
+#right {
+    position: relative;
+    width: 400px;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto; /* Allows interacting with the 3D canvas */
+}
+
+#right canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 50%; /* Optional: softens the edges of the renderer */
+}
+
+#tooltip {
+    position: absolute;
+    background: rgba(10, 10, 15, 0.9);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 20;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 10px rgba(0, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    white-space: nowrap;
+}
+
+#tooltip.hidden {
+    opacity: 0;
+    transform: scale(0.9) translate(-50%, -50%);
+}
+
+#tooltip h3 {
+    margin-bottom: 5px;
+    color: #00ffff;
+    font-size: 1rem;
+}
+
+#tooltip p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #ccc;
+}
+
+
 /* --- ANIMATIONS --- */
 @keyframes colorShift {
     0% { filter: hue-rotate(0deg); }
@@ -151,3 +205,4 @@ p {
     0% { transform: translate(0, 0) scale(1); opacity: 0.3; }
     100% { transform: translate(-5%, 10%) scale(1.05); opacity: 0.6; }
 }
+
